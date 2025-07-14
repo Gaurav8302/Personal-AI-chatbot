@@ -1,0 +1,14 @@
+# Ignore memory logs
+chat_sessions/
+
+# Bytecode
+__pycache__/
+*.py[cod]
+
+# Environment
+venv/
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
