@@ -135,6 +135,11 @@ def save_summary(summary_text):
 def summarize_and_save(messages_to_summarize):
     """Uses the local LLM to summarize part of the chat and saves it."""
     print("🧪 summarize_and_save() triggered...")
+
+    from datetime import datetime
+    import os
+    timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+
     filtered_messages = [msg for msg in messages_to_summarize if msg["role"] in ("user", "assistant")]
 
     summarization_prompt = [
@@ -160,8 +165,27 @@ def summarize_and_save(messages_to_summarize):
             summary = data["choices"][0]["message"]["content"].strip()
             if summary:
                 save_summary(summary)
-            else:
-                print("⚠️ Model returned an empty summary.")
+
+                # 🏷️ Generate a short title (second call)
+                title_prompt = summarization_prompt[:-1] + [
+                    {"role": "user", "content": "Give a 3-5 word title for this chat."}
+                ]
+                title_payload = {**payload, "messages": title_prompt}
+
+                try:
+                    title_response = requests.post(LLM_URL, json=title_payload)
+                    title_response.raise_for_status()
+                    title_data = title_response.json()
+                    title = title_data["choices"][0]["message"]["content"].strip()
+
+                    # Save metadata
+                    title_file = os.path.join(SESSIONS_DIR, f"{timestamp}-meta.json")
+                    with open(title_file, "w", encoding="utf-8") as f:
+                        json.dump({"title": title, "created_at": timestamp}, f, indent=2)
+                    print(f"\n🏷️ Session Title: {title}")
+                except Exception as e:
+                    print(f"❌ Failed to save session title: {e}")
+
         else:
             print("❌ Unexpected response format:", data)
     except Exception as e:
