@@ -11,3 +11,4 @@ rag_db/
 *.log
 .DS_Store
 desktop.ini
+.env
