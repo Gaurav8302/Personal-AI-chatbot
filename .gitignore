@@ -1,14 +1,13 @@
-# Ignore memory logs
-chat_sessions/
-
-# Bytecode
+# Virtual environment and cache
+.venv/
 __pycache__/
-*.py[cod]
 
-# Environment
-venv/
-.env
+# Chat data
+chat_sessions/
+rag_db/
 
-# OS files
+# System files
+*.pyc
+*.log
 .DS_Store
-Thumbs.db
+desktop.ini
