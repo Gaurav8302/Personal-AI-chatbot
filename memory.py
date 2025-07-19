@@ -23,6 +23,12 @@ def get_summary_filename():
     today = datetime.now().strftime("%Y-%m-%d")
     return os.path.join(SESSIONS_DIR, f"{today}{SUMMARY_SUFFIX}")
 
+def get_session_filename(session_id=None):
+    if session_id:
+        return os.path.join(SESSIONS_DIR, f"{session_id}.json")
+    else:
+        return get_today_filename()
+
 def load_session():
     """Loads the latest chat history and all summaries. Creates a user profile if missing."""
     print("🧠 Loading session and summaries...")
@@ -86,9 +92,9 @@ def load_session():
 
     return memory
 
-def get_full_session_history():
+def get_full_session_history(session_id=None):
     """Loads the full chat log for today."""
-    session_file = get_today_filename()
+    session_file = get_session_filename(session_id)
     if os.path.exists(session_file):
         try:
             with open(session_file, "r", encoding="utf-8") as f:
@@ -97,9 +103,9 @@ def get_full_session_history():
             print("⚠️ Could not read full session history.")
     return []
 
-def save_message(role, content):
+def save_message(role, content, session_id=None):
     """Appends a new message to today's session file."""
-    session_file = get_today_filename()
+    session_file = get_session_filename(session_id)
     try:
         messages = []
         if os.path.exists(session_file):
